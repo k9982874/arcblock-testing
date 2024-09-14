@@ -15,9 +15,9 @@ export const putUserProfileSchema = {
     }),
   }),
   body: z.object({
-    username: z.string().min(2, {
-      message: 'Username must be at least 2 characters',
-    }),
+    username: z.string()
+      .min(2, { message: 'User name must be at least 2 characters' })
+      .max(32, { message: 'User name must be less than or equal to 16 characters' }),
     email: z.string().email({
       message: 'Email is invalid',
     }),
@@ -27,7 +27,11 @@ export const putUserProfileSchema = {
         message: 'Phone number is invalid',
       })
       .optional(),
-    gender: z.number().min(-1, 'Gender is invalid').max(1, 'Gender is invalid').optional(),
+    gender: z.number()
+      .refine((value) => value >= -1 && value <= 1, {
+        message: 'Gender is invalid',
+      })
+      .optional(),
     birthday: z.string().date('Birthday is invalid').optional(),
   }),
 };

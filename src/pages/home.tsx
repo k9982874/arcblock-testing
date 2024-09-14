@@ -16,20 +16,22 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: 'Username must be at least 2 characters',
-  }),
-  email: z.string().email({
-    message: 'Email is invalid',
-  }),
+  username: z.string()
+    .min(2, { message: 'User name must be at least 2 characters' })
+    .max(32, { message: 'User name must be less than or equal to 16 characters' }),
+  email: z.string().email({ message: 'Email is invalid' }),
   phone: z
     .string()
     .regex(/^(?:(?:\+|00)86)?1\d{10}$/, {
       message: 'Phone number is invalid',
     })
     .optional(),
-  gender: z.string().optional(),
-  birthday: z.date().optional(),
+  gender: z.string()
+    .refine((value) => ['unknown', 'male', 'female'].includes(value), {
+      message: 'Gender is invalid',
+    })
+    .optional(),
+  birthday: z.date({ message: 'Birthday is invalid' }).optional(),
 });
 
 interface ProfilePageProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -67,7 +69,7 @@ function ProfileForm({ profile }: ProfilePageProps) {
           setIsEdit(false);
 
           toast({
-            title: 'Your profile has been updated successfully',
+            title: '🎉 Your profile has been updated successfully',
           });
         },
         onError: (err) => {
@@ -83,7 +85,8 @@ function ProfileForm({ profile }: ProfilePageProps) {
   return (
     <div className="container mx-auto">
       <div className="flex justify-center items-center h-screen">
-        <Card className="rounded-none md:rounded-xl border-none md:border shadow-none md:shadow w-full md:w-[700px] h-full md:h-auto">
+        <Card className={cn("rounded-none md:rounded-xl border-none md:border shadow-none md:shadow w-full md:w-[700px] h-full md:h-auto",
+          window?.innerWidth >= 1024 ? "animate-in slide-in-from-left" : "animate-in slide-in-from-top")}>
           <CardHeader className="flex md:hidden">
             <CardTitle>
               <Avatar userId={1} src={profile.avatar} className="flex items-center" imageClassName="w-[32px] h-[32px]">
@@ -107,7 +110,10 @@ function ProfileForm({ profile }: ProfilePageProps) {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input readOnly={!isEdit} placeholder="Username" {...field} />
+                        <div className="relative w-full">
+                          <Input className="pl-[32px]" readOnly={!isEdit} placeholder="Username" {...field} />
+                          <Icons.user className="absolute left-3 top-2/4 -translate-y-2/4 shrink-0 opacity-50 w-[16px] h-[16px]" />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -120,7 +126,10 @@ function ProfileForm({ profile }: ProfilePageProps) {
                     <FormItem className="pt-2">
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input readOnly={!isEdit} placeholder="Email" {...field} />
+                        <div className="relative w-full">
+                          <Input className="pl-[32px]" readOnly={!isEdit} placeholder="Email" {...field} />
+                          <Icons.mail className="absolute left-3 top-2/4 -translate-y-2/4 shrink-0 opacity-50 w-[16px] h-[16px]" />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -133,7 +142,10 @@ function ProfileForm({ profile }: ProfilePageProps) {
                     <FormItem className="pt-2">
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input readOnly={!isEdit} placeholder="Phone Number" {...field} />
+                        <div className="relative w-full">
+                          <Input className="pl-[32px]" readOnly={!isEdit} placeholder="Phone Number" {...field} />
+                          <Icons.phone className="absolute left-3 top-2/4 -translate-y-2/4 shrink-0 opacity-50 w-[16px] h-[16px]" />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
