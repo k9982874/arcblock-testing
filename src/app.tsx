@@ -1,15 +1,22 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
 
 import Home from './pages/home';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <div className="app">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+        <Toaster />
+      </div>
+    </QueryClientProvider>
   );
 }
 
